@@ -19,6 +19,7 @@ namespace LinkParser
             if (string.IsNullOrEmpty(entryUrl))
             {
                 Console.WriteLine("Entry URL was not pass");
+                Console.ReadLine();
                 return;
             }
 

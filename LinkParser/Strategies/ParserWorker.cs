@@ -14,14 +14,18 @@ namespace LinkParser.Strategies
     /// </summary>
     public class ParserWorker
     {
+        /// <summary>
+        /// Specific parser according to parser settings
+        /// </summary>
         public Parser Parser { get; set; }
 
-        public ParserWorker(Parser strategy)
-        {
-            this.Parser = strategy;
-        }
+        private readonly IResultWriter _fileResultWriter;
 
-        public ParserWorker() { }
+        public ParserWorker(Parser strategy, IResultWriter resultWriter)
+        {
+            Parser = strategy;
+            _fileResultWriter = resultWriter;
+        }
 
         /// <summary>
         /// Set current parser
@@ -33,7 +37,7 @@ namespace LinkParser.Strategies
         }
 
         /// <summary>
-        /// Start links parse process
+        /// Start pages parse process and write links to the file
         /// </summary>
         public async Task Start()
         {
@@ -45,8 +49,8 @@ namespace LinkParser.Strategies
 
             await Parser.Start();
 
-            IResultWriter fileWriter = new ResultFileWriter();
-            await fileWriter.Write(Parser.GetLinks());
+            List<string> links = Parser.GetLinks();
+            await _fileResultWriter.WriteAsync(links);
 
             return;
         }

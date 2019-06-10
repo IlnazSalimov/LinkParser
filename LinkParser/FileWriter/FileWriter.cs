@@ -12,15 +12,17 @@ namespace LinkParser.FileWriter
     public class ResultFileWriter : IResultWriter
     {
         private string _filePath = "result.txt";
-        public async Task Write(List<string> content)
+        
+        public async Task WriteAsync(List<string> content)
         {
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), _filePath);
-            using (FileStream fstream = new FileStream(filePath, FileMode.OpenOrCreate))
+            using (FileStream fstream = new FileStream(filePath, FileMode.Create))
             {
                 try
                 {
                     byte[] array = System.Text.Encoding.Default.GetBytes(string.Join(System.Environment.NewLine, content));
                     await fstream.WriteAsync(array, 0, array.Length);
+                    Console.WriteLine($"Result has been written to file {filePath}");
                 }
                 catch (DirectoryNotFoundException e)
                 {

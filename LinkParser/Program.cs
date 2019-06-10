@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using LinkParser.Core;
+using LinkParser.FileWriter;
 using LinkParser.Strategies;
-using LinkParser.Strategies.Factory;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LinkParser
 {
-    class Program
+    public class Program
     {
+        private static IServiceProvider _serviceProvider;
+
         static void Main(string[] args)
         {
             string entryUrl = args.Length >= 1 ? args[0] : String.Empty;
@@ -20,37 +23,59 @@ namespace LinkParser
             }
 
             ParsingSettings settings = new ParsingSettings(entryUrl, parserType);
+            RegisterServices(settings);
 
-            Parser parser = new ParserCreator().GetParser(settings);
-            parser.OnNewPage += OnNewPage;
-            parser.OnCompleted += OnCompleted;
-
-            try
-            {
-                ParserWorker parserWorker = new ParserWorker(parser);
-                parserWorker.Start().Wait();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            ParserWorker parserWorker = _serviceProvider.GetService<ParserWorker>();
+            parserWorker.Parser.OnNewPage += OnNewPage;
+            parserWorker.Parser.OnCompleted += OnCompleted;
+            parserWorker.Start().Wait();
 
             Console.ReadLine();
         }
 
         private static void OnNewPage(object e, HtmlPageInfo page)
         {
-            Console.Clear();
-            Console.WriteLine($"Founded links count: {((Parser)e).Pages.Count}");
+            ClearConsoleLines(2);
+            Console.WriteLine($"Parsed page count: {((Parser)e).Pages.Count}");
             Console.WriteLine($"Current page: {page.Url}");
-            Console.SetCursorPosition(0, 0);
+            Console.SetCursorPosition(0, Console.CursorTop - 2);
         }
 
         private static void OnCompleted(object e)
         {
-            Console.Clear();
-            Console.WriteLine($"Founded links count: {((Parser)e).Pages.Count}");
+            ClearConsoleLines(2);
+            Console.WriteLine($"Parsed page count: {((Parser)e).Pages.Count}");
             Console.WriteLine("Parse completed");
+        }
+
+        private static void RegisterServices(ParsingSettings settings)
+        {
+            var collection = new ServiceCollection();
+            collection.AddSingleton<Parser>(provider =>
+            {
+                switch (settings.ParserType)
+                {
+                    case "default": return new DefaultParser(settings);
+                    case "content": return new ContentLengthConditionParser(settings);
+                    case "images": return new ImageLinkParser(settings);
+                    default: return new DefaultParser(settings);
+                }
+            });
+            collection.AddSingleton<ParserWorker>();
+            collection.AddScoped<IResultWriter, ResultFileWriter>();
+
+            _serviceProvider = collection.BuildServiceProvider();
+        }
+
+        public static void ClearConsoleLines(int lineCountToClear)
+        {
+            int currentLineCursor = Console.CursorTop;
+            for (int i = 0; i <= lineCountToClear; i++)
+            {
+                Console.Write(new string(' ', Console.WindowWidth));
+                Console.SetCursorPosition(0, Console.CursorTop);
+            }
+            Console.SetCursorPosition(0, currentLineCursor);
         }
     }
 }

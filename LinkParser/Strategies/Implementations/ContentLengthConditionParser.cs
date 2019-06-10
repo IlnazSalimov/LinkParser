@@ -6,6 +6,9 @@ using LinkParser.Core;
 
 namespace LinkParser.Strategies
 {
+    /// <summary>
+    /// Specific parser with content length condition
+    /// </summary>
     public class ContentLengthConditionParser : Parser
     {
         private const int MinContentLength = 200000;
@@ -14,7 +17,9 @@ namespace LinkParser.Strategies
 
         public override List<string> GetLinks()
         {
-            return Pages.Where(p => p.Response?.Content?.Headers?.ContentLength >= MinContentLength).Select(p => p.Url).ToList();
+            List<string> links = Pages.Where(p => p.Response?.Content?.Headers?.ContentLength >= MinContentLength).Select(p => p.Url).ToList();
+            Console.WriteLine($"The number of links larger than {MinContentLength} bytes: {links.Count}");
+            return links;
         }
     }
 }

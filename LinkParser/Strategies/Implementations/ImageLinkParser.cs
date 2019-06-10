@@ -6,21 +6,30 @@ using LinkParser.Core;
 
 namespace LinkParser.Strategies
 {
+    /// <summary>
+    /// Specific parser to parse img tag as a link
+    /// </summary>
     public class ImageLinkParser : Parser
     {
         public ImageLinkParser(ParsingSettings settings) : base(settings) { }
 
         public override List<string> GetLinks()
         {
-            return GetImagesSource();
+            List<string> images = GetUniqImagesSources();
+            Console.WriteLine($"The number of images: {images.Count}");
+            return images;
         }
 
-        private List<string> GetImagesSource()
+        /// <summary>
+        /// Get uniq all image links
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetUniqImagesSources()
         {
             return Pages.Where(p => p.Document != null).SelectMany(p => p.Document.All)
-                // Select only the tag <a> (link)
+                // Select only the tag <img> (link)
                 .Where(tag => tag.LocalName == "img")
-                // Project the value of the href attribute (link)
+                // Project the value of the src attribute (link)
                 .Select(tag => ToAbsoluteUrl(tag.GetAttribute("src")))
                 // Select only links of this domain (including relative links)
                 .Where(href => !string.IsNullOrEmpty(href) && (href.StartsWith(Settings.UrlSchemeAndHost) || href.StartsWith("/")))

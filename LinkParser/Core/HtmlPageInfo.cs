@@ -11,10 +11,19 @@ namespace LinkParser.Strategies
     /// </summary>
     public class HtmlPageInfo
     {
+        /// <summary>
+        /// Represents a HTTP response message 
+        /// </summary>
         public HttpResponseMessage Response { get; set; }
 
+        /// <summary>
+        /// Entry link of site to start parsing
+        /// </summary>
         public string Url { get; set; }
 
+        /// <summary>
+        /// Parsed document of this page
+        /// </summary>
         public IHtmlDocument Document { get; set; }
 
         public HtmlPageInfo() { }

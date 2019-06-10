@@ -13,6 +13,6 @@ namespace LinkParser.FileWriter
         /// <summary>
         /// Write content to specific file wich is provided into class
         /// </summary>
-        Task Write(List<string> content);
+        Task WriteAsync(List<string> content);
     }
 }

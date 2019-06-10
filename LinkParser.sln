@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28306.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkParser", "LinkParser\LinkParser.csproj", "{3A365C53-87DF-4123-BB35-9591A8225639}"
+EndProject
+Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A365C53-87DF-4123-BB35-9591A8225639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A365C53-87DF-4123-BB35-9591A8225639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A365C53-87DF-4123-BB35-9591A8225639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A365C53-87DF-4123-BB35-9591A8225639}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0718BCF-8646-42E3-9275-B4AE444B7834}
+	EndGlobalSection
+EndGlobal

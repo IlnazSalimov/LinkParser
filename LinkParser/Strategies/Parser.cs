@@ -82,6 +82,11 @@ namespace LinkParser.Strategies
         {
             try
             {
+                if (string.IsNullOrEmpty(url))
+                {
+                    return null;
+                }
+
                 HttpResponseMessage response = await GetResponseAsync(url);
 
                 // Returning page with url even If we did not get response
@@ -106,7 +111,13 @@ namespace LinkParser.Strategies
         /// <returns></returns>
         public async Task Start()
         {
-            HtmlPageInfo rootPage = await GetPageInfo(Settings.Url.AbsoluteUri);
+            HtmlPageInfo rootPage = await GetPageInfo(Settings?.Url?.AbsoluteUri);
+            if(rootPage == null)
+            {
+                OnCompleted?.Invoke(this);
+                return;
+            }
+
             _tempLinks.Add(rootPage.Url);
             Pages.Add(rootPage);
 
@@ -126,12 +137,12 @@ namespace LinkParser.Strategies
 
             foreach (string link in links)
             {
-                if (string.IsNullOrEmpty(link))
+                HtmlPageInfo childPage = await GetPageInfo(link);
+                if (childPage == null)
                 {
                     continue;
                 }
 
-                HtmlPageInfo childPage = await GetPageInfo(link);
                 Pages.Add(childPage);
                 OnNewPage?.Invoke(this, childPage);
                 await FillChildPages(childPage);
@@ -156,7 +167,7 @@ namespace LinkParser.Strategies
                 // Project the value of the href attribute (link)
                 .Select(tag => ToAbsoluteUrl(tag.GetAttribute("href")))
                 // Select only links of this domain (including relative links)
-                .Where(href => !string.IsNullOrEmpty(href) && (href.StartsWith(Settings.UrlSchemeAndHost) || href.StartsWith("/")))
+                .Where(href => !string.IsNullOrEmpty(href) && (href.StartsWith(Settings?.UrlSchemeAndHost) || href.StartsWith("/")))
                 // Select links that have not been added before and remove the repetition
                 .Where(href => !_tempLinks.Contains(href)).Distinct().ToList();
         }
@@ -172,10 +183,21 @@ namespace LinkParser.Strategies
         /// </summary>
         protected string ToAbsoluteUrl(string url)
         {
-            if (!string.IsNullOrEmpty(url) && url.StartsWith("/"))
+            if (string.IsNullOrEmpty(url))
             {
-                return Settings.UrlSchemeAndHost + url;
+                return url;
             }
+
+            if (url.StartsWith("//"))
+            {
+                return $"{Settings?.Url?.Scheme}: + {url}";
+            }
+
+            if (url.StartsWith("/"))
+            {
+                return Settings?.UrlSchemeAndHost + url;
+            }
+
             return url;
         }
     }

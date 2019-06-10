@@ -32,7 +32,7 @@ namespace LinkParser.Strategies
                 // Project the value of the src attribute (link)
                 .Select(tag => ToAbsoluteUrl(tag.GetAttribute("src")))
                 // Select only links of this domain (including relative links)
-                .Where(href => !string.IsNullOrEmpty(href) && (href.StartsWith(Settings.UrlSchemeAndHost) || href.StartsWith("/")))
+                .Where(href => !string.IsNullOrEmpty(href) && (href.StartsWith(Settings?.UrlSchemeAndHost) || href.StartsWith("/")))
                 // Remove the repetition
                 .Distinct().ToList();
         }

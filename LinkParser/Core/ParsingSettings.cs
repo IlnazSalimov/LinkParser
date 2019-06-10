@@ -9,9 +9,21 @@ namespace LinkParser.Core
     /// </summary>
     public class ParsingSettings
     {
-        public ParsingSettings(string url, string strategy)
+        public ParsingSettings(string uri, string strategy)
         {
-            Url = new Uri(url);
+            try
+            {
+                Url = new Uri(uri);
+            }
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine("URI string object is a null reference: {0}", e);
+            }
+            catch (UriFormatException e)
+            {
+                Console.WriteLine("URI formatting error: {0}", e);
+            }
+
             ParserType = strategy;
         }
 
@@ -23,7 +35,7 @@ namespace LinkParser.Core
         /// <summary>
         /// Domain of the site along with the protocol
         /// </summary>
-        public string UrlSchemeAndHost => $"{Url.Scheme}://{Url.Host}";
+        public string UrlSchemeAndHost => $"{Url?.Scheme}://{Url?.Host}";
 
         /// <summary>
         /// HTML parsing strategy
